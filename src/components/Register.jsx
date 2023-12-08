@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useAuth } from "../contexts/AuthContextProvder";
 import { useNavigate } from "react-router-dom";
 
@@ -43,36 +43,52 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="w-fit m-auto">
-        <h2 className="text-center font-semibold text-xl mt-8">Register</h2>
-        {error && <span>{error}</span>}
-        <TextField
-          id="outlined-basic"
-          name="email"
-          label="Email"
-          variant="outlined"
-          onChange={handleChange}
-        />
-        <TextField
-          id="outlined-basic"
-          name="password"
-          label="Password"
-          variant="outlined"
-          onChange={handleChange}
-        />
-        <TextField
-          id="outlined-basic"
-          name="password_confirm"
-          label="Password confirmation"
-          variant="outlined"
-          onChange={handleChange}
-        />
-        <Button variant="contained" type="submit">
-          Sign up
-        </Button>
-      </form>
-    </div>
+    <Box
+      onSubmit={handleSubmit}
+      component="form"
+      sx={{
+        "& .MuiTextField-root": { m: 1, width: "30ch" },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "25%",
+        margin: "auto",
+        marginTop: "100px",
+        border: "3px solid #1976D2",
+        borderRadius: "20px",
+        gap: "10px",
+        padding: "30px 5px",
+      }}
+      noValidate
+      autoComplete="off"
+    >
+      <h2 className="text-center font-semibold text-xl">Register</h2>
+      {error && <span>{error}</span>}
+      <TextField
+        id="outlined-basic"
+        name="email"
+        label="Email"
+        variant="outlined"
+        onChange={handleChange}
+      />
+      <TextField
+        id="outlined-basic"
+        name="password"
+        label="Password"
+        variant="outlined"
+        onChange={handleChange}
+      />
+      <TextField
+        id="outlined-basic"
+        name="password_confirm"
+        label="Password confirmation"
+        variant="outlined"
+        onChange={handleChange}
+      />
+      <Button variant="contained" type="submit">
+        Sign up
+      </Button>
+    </Box>
   );
 };
 
