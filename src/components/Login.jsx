@@ -1,13 +1,18 @@
 import { Box, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContextProvder";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { error } = useAuth();
+  const { error, setError, handleLogin } = useAuth();
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    setError("");
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,9 +23,24 @@ const Login = () => {
     console.log(loginForm);
   };
 
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("clicked");
+    if (!loginForm.email.trim() || !loginForm.password.trim()) {
+      alert("some inputs are empty!");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("email", loginForm.email);
+    formData.append("password", loginForm.password);
+    handleLogin(formData, loginForm.email, navigate);
+  };
+
   return (
     <Box
-      //   onSubmit={handleSubmit}
+      onSubmit={handleSubmit}
       component="form"
       sx={{
         "& .MuiTextField-root": { m: 1, width: "30ch" },
@@ -39,7 +59,11 @@ const Login = () => {
       autoComplete="off"
     >
       <h2 className="text-center font-semibold text-xl">Login</h2>
-      {error && <span>{error}</span>}
+      {error && (
+        <span className="text-center text-red-700 font-bold text-xl">
+          {error}
+        </span>
+      )}
       <TextField
         id="outlined-basic"
         name="email"

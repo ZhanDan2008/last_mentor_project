@@ -12,10 +12,6 @@ const Register = () => {
 
   const { handleRegister, error } = useAuth();
 
-  useEffect(() => {
-    console.log(error, "error");
-  }, [error]);
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {

@@ -3,6 +3,8 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContextProvder";
+import { useProducts } from "../contexts/ProductContextProvider";
 
 function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -13,6 +15,17 @@ function Navbar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const { currentUser, setCurrentUser, handleLogout, checkAuth } = useAuth();
+
+  React.useEffect(() => {
+    checkAuth();
+    setCurrentUser(localStorage.getItem("email"));
+  }, []);
+
+  React.useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
 
   return (
     <div className="bg-purple-500 text-white">
@@ -41,8 +54,16 @@ function Navbar() {
         <MenuItem onClick={handleClose}>
           <NavLink to={"/login"}>Login</NavLink>
         </MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleLogout();
+            handleClose();
+          }}
+        >
+          Logout
+        </MenuItem>
       </Menu>
+      <div>{currentUser ? currentUser : "No active user"}</div>
     </div>
   );
 }
