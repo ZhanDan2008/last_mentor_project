@@ -20,14 +20,14 @@ const Login = () => {
       ...loginForm,
       [name]: value,
     });
-    console.log(loginForm);
+    // console.log(/loginForm);
   };
 
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("clicked");
+    // console.log("clicked");
     if (!loginForm.email.trim() || !loginForm.password.trim()) {
       alert("some inputs are empty!");
       return;
