@@ -7,13 +7,22 @@ import { useAuth } from "../contexts/AuthContextProvder";
 import { useProducts } from "../contexts/ProductContextProvider";
 
 function Navbar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const [account, setAccount] = React.useState(null);
+  const [product, setProduct] = React.useState(null);
+  const open = Boolean(account);
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAccount(event.currentTarget);
   };
   const handleClose = () => {
-    setAnchorEl(null);
+    setAccount(null);
+  };
+
+  const openProduct = Boolean(product);
+  const handleProductClick = (event) => {
+    setProduct(event.currentTarget);
+  };
+  const handleProductClose = () => {
+    setProduct(null);
   };
 
   const { currentUser, setCurrentUser, handleLogout, checkAuth } = useAuth();
@@ -28,7 +37,7 @@ function Navbar() {
   }, [currentUser]);
 
   return (
-    <div className="bg-purple-500 text-white">
+    <div className="bg-purple-500 text-white sticky top-0 z-20">
       <Button
         id="basic-button"
         aria-controls={open ? "basic-menu" : undefined}
@@ -41,7 +50,7 @@ function Navbar() {
       </Button>
       <Menu
         id="basic-menu"
-        anchorEl={anchorEl}
+        anchorEl={account}
         open={open}
         onClose={handleClose}
         MenuListProps={{
@@ -61,6 +70,32 @@ function Navbar() {
           }}
         >
           Logout
+        </MenuItem>
+      </Menu>
+      <Button
+        id="basic-button"
+        aria-controls={open ? "basic-menu" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        onClick={handleProductClick}
+        color="success"
+      >
+        Product
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={product}
+        open={openProduct}
+        onClose={handleProductClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <MenuItem onClick={handleProductClose}>
+          <NavLink to={"/"}>Products list</NavLink>
+        </MenuItem>
+        <MenuItem onClick={handleProductClose}>
+          <NavLink to={"/add"}>Create product</NavLink>
         </MenuItem>
       </Menu>
       <div>{currentUser ? currentUser : "No active user"}</div>

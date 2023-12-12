@@ -12,7 +12,6 @@ const AuthContextProvder = ({ children }) => {
   async function handleRegister(formData, navigate) {
     try {
       const res = await axios.post(`${API}account/register/`, formData);
-      console.log(res);
       setError("");
       navigate("/");
     } catch (err) {
@@ -24,7 +23,6 @@ const AuthContextProvder = ({ children }) => {
   const handleLogin = async (formData, email, navigate) => {
     try {
       const res = await axios.post(`${API}account/login/`, formData);
-      console.log(res);
       localStorage.setItem("tokens", JSON.stringify(res.data));
       localStorage.setItem("email", email);
       setCurrentUser(email);
@@ -45,16 +43,26 @@ const AuthContextProvder = ({ children }) => {
     try {
       const tokens = JSON.parse(localStorage.getItem("tokens"));
       //! config
-      const Autharization = `Bearer ${tokens.access}`;
+      const Authorization = `Bearer ${tokens.access}`;
       const config = {
         headers: {
-          Autharization,
+          Authorization,
         },
       };
-      const res = await axios.post(`${API}account/token/refresh/`, {
-        refresh: tokens.refresh,
-      });
-      //   console.log(res);
+      const res = await axios.post(
+        `${API}account/token/refresh/`,
+        {
+          refresh: tokens.refresh,
+        },
+        config
+      );
+      localStorage.setItem(
+        "tokens",
+        JSON.stringify({
+          access: res.data.access,
+          refresh: tokens.refresh,
+        })
+      );
     } catch (err) {
       console.log(err);
     }

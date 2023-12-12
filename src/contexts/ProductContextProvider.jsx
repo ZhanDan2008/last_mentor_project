@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react";
-import { API } from "../helpers/consts";
+import { ACTIONS, API } from "../helpers/consts";
 import axios from "axios";
+import { getConfig } from "../helpers/functions";
 
 const productContext = createContext();
 export const useProducts = () => {
@@ -11,14 +12,28 @@ export const useProducts = () => {
 
 const INIT_STATE = {
   products: [],
+  oneProduct: null,
+  pages: 0,
+  categories: [],
 };
 
 function reducer(state = INIT_STATE, action) {
   switch (action.type) {
-    case "GET_PRODUCTS":
+    case ACTIONS.GET_PRODUCTS:
       return {
         ...state,
-        products: action.payload,
+        products: action.payload.results,
+        pages: Math.ceil(action.payload.count / 4),
+      };
+    case ACTIONS.GET_ONE_PRODUCT:
+      return {
+        ...state,
+        oneProduct: action.payload,
+      };
+    case ACTIONS.GET_CATEGORIES:
+      return {
+        ...state,
+        categories: action.payload,
       };
     default:
       return state;
@@ -27,20 +42,116 @@ function reducer(state = INIT_STATE, action) {
 
 const ProductContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
+
   async function getProducts() {
     try {
-      const res = await axios.get(`${API}products/`);
+      const res = await axios.get(
+        `${API}products/${window.location.search}`,
+        getConfig()
+      );
+
+      console.log(res);
       dispatch({
-        type: "GET_PRODUCTS",
-        payload: res.data.results,
+        type: ACTIONS.GET_PRODUCTS,
+        payload: res.data,
       });
     } catch (err) {
       console.log(err);
     }
   }
 
+  const addProduct = async (newProduct, navigate) => {
+    try {
+      await axios.post(`${API}products/`, newProduct, getConfig());
+      getProducts();
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`${API}products/${id}/`);
+      getProducts();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getOneProduct = async (id) => {
+    try {
+      const { data } = await axios.get(`${API}products/${id}/`, getConfig());
+      dispatch({
+        type: ACTIONS.GET_ONE_PRODUCT,
+        payload: data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const saveEditedProduct = async (newProduct) => {
+    try {
+      await axios.patch(`${API}products/${newProduct.id}`, newProduct);
+      getProducts();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getCategories = async () => {
+    try {
+      const { data } = await axios.get(`${API}category/list/`);
+      dispatch({
+        type: ACTIONS.GET_CATEGORIES,
+        payload: data.results,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  async function createComment(id, content) {
+    try {
+      const res = await axios.post(`${API}reviews/`, content, getConfig());
+      console.log(res);
+      getOneProduct(id);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function deleteComment(productId, commentId) {
+    try {
+      const res = await axios.delete(
+        `${API}reviews/${commentId}/`,
+        getConfig()
+      );
+      console.log(res);
+      getOneProduct(productId);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <productContext.Provider value={{ getProducts, products: state.products }}>
+    <productContext.Provider
+      value={{
+        getProducts,
+        products: state.products,
+        oneProduct: state.oneProduct,
+        pages: state.pages,
+        addProduct,
+        deleteProduct,
+        getOneProduct,
+        getCategories,
+        saveEditedProduct,
+        categories: state.categories,
+        createComment,
+        deleteComment,
+      }}
+    >
       {children}
     </productContext.Provider>
   );
