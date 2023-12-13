@@ -5,6 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContextProvder";
 import { useProducts } from "../contexts/ProductContextProvider";
+import Search from "./products/Search";
 
 function Navbar() {
   const [account, setAccount] = React.useState(null);
@@ -37,7 +38,7 @@ function Navbar() {
   }, [currentUser]);
 
   return (
-    <div className="bg-purple-500 text-white sticky top-0 z-20">
+    <div className="bg-purple-500 flex justify-around text-white sticky top-0 z-20">
       <Button
         id="basic-button"
         aria-controls={open ? "basic-menu" : undefined}
@@ -99,6 +100,7 @@ function Navbar() {
         </MenuItem>
       </Menu>
       <div>{currentUser ? currentUser : "No active user"}</div>
+      <Search />
     </div>
   );
 }

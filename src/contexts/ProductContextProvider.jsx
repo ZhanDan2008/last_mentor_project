@@ -72,7 +72,7 @@ const ProductContextProvider = ({ children }) => {
 
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`${API}products/${id}/`);
+      await axios.delete(`${API}products/${id}/`, getConfig());
       getProducts();
     } catch (err) {
       console.log(err);
@@ -91,9 +91,10 @@ const ProductContextProvider = ({ children }) => {
     }
   };
 
-  const saveEditedProduct = async (newProduct) => {
+  const saveEditedProduct = async (id, newProduct, navigate) => {
     try {
-      await axios.patch(`${API}products/${newProduct.id}`, newProduct);
+      await axios.patch(`${API}products/${id}/`, newProduct, getConfig());
+      navigate("/");
       getProducts();
     } catch (err) {
       console.log(err);
@@ -135,6 +136,19 @@ const ProductContextProvider = ({ children }) => {
     }
   }
 
+  async function toggleLike(id) {
+    try {
+      const res = await axios.get(
+        `${API}products/${id}/toggle_like/`,
+        getConfig()
+      );
+      console.log(res);
+      getProducts();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <productContext.Provider
       value={{
@@ -150,6 +164,7 @@ const ProductContextProvider = ({ children }) => {
         categories: state.categories,
         createComment,
         deleteComment,
+        toggleLike,
       }}
     >
       {children}
